@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlipMarket PRO</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#050508;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:20px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+:root{
+  --g:#00C853;--r:#FF3D57;--gold:#FFB300;
+  --bg:#0B0B0F;--s1:#141418;--s2:#1C1C24;--s3:#252530;
+  --txt:#F0F0F5;--muted:#7A7A8A;--mono:'Courier New',monospace;
+}
+#phone{
+  background:var(--bg);color:var(--txt);
+  width:390px;min-height:820px;
+  border-radius:32px;overflow:hidden;
+  border:1.5px solid #2a2a3a;
+  display:flex;flex-direction:column;
+  position:relative;
+}
+#ticker{background:var(--s1);border-bottom:1px solid #222230;padding:5px 0;overflow:hidden;white-space:nowrap;font-size:10px;font-family:var(--mono);color:var(--muted)}
+#ticker-inner{display:inline-block;animation:scroll 35s linear infinite}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ti-item{display:inline-block;margin:0 16px}
+.tu{color:var(--g)}.td{color:var(--r)}
+
+#hdr{background:var(--s1);padding:14px 18px 11px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222230}
+.logo{font-size:18px;font-weight:700;letter-spacing:-.5px}.logo span{color:var(--g)}
+#bal-box .lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+#bal-val{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--gold)}
+
+#nav{display:flex;background:var(--s1);border-bottom:1px solid #222230}
+.nb{flex:1;padding:10px 4px;border:none;background:none;color:var(--muted);font-size:9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .15s}
+.nb i{font-size:18px}.nb.act{color:var(--g);border-bottom:2px solid var(--g)}
+
+#content{flex:1;overflow-y:auto;padding:12px;scrollbar-width:thin;scrollbar-color:#2a2a3a transparent}
+#content::-webkit-scrollbar{width:4px}
+#content::-webkit-scrollbar-track{background:transparent}
+#content::-webkit-scrollbar-thumb{background:#2a2a3a;border-radius:2px}
+
+.sec{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:8px 0 8px}
+
+.cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat-btn{padding:6px 13px;border-radius:20px;border:1px solid #2a2a3a;background:none;color:var(--muted);font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.cat-btn.act{background:var(--g);color:#000;border-color:var(--g)}
+
+.icard{background:var(--s2);border:1px solid #252535;border-radius:12px;padding:11px;margin-bottom:7px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .15s}
+.icard:hover{border-color:#3a3a55}
+.iimg{width:54px;height:54px;border-radius:9px;object-fit:cover;flex-shrink:0;background:var(--s3)}
+.iimg-ph{width:54px;height:54px;border-radius:9px;background:var(--s3);display:none;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.iinfo{flex:1;min-width:0}
+.iname{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.isub{font-size:10px;color:var(--muted);margin-top:2px}
+.iright{text-align:right;flex-shrink:0}
+.iprice{font-family:var(--mono);font-size:14px;font-weight:700}
+.itrend{font-size:9px;margin-top:2px}
+.up{color:var(--g)}.down{color:var(--r)}
+
+#load-more{width:100%;padding:13px;background:var(--s2);border:1px solid #252535;border-radius:10px;color:var(--txt);font-size:12px;font-weight:600;cursor:pointer;margin-top:4px;margin-bottom:10px}
+#load-more:hover{background:var(--s3)}
+
+.port-item{background:var(--s2);border:1px solid #252535;border-radius:12px;padding:12px;margin-bottom:8px}
+.port-row{display:flex;justify-content:space-between;align-items:center}
+.port-name{font-size:12px;font-weight:600}
+.port-qty{font-size:10px;color:var(--muted);margin-top:2px}
+.port-pnl{font-family:var(--mono);font-size:13px;font-weight:700}
+.pbar{height:3px;border-radius:2px;margin-top:8px;background:#252535}
+.pfill{height:100%;border-radius:2px}
+
+#sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.sc{background:var(--s2);border:1px solid #252535;border-radius:12px;padding:12px}
+.sc .lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.sc .val{font-family:var(--mono);font-size:20px;font-weight:700;margin-top:4px}
+
+.hitem{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #1a1a28}
+.htype{font-size:9px;font-weight:700;padding:3px 7px;border-radius:5px;flex-shrink:0}
+.hbuy{background:rgba(0,200,83,.15);color:var(--g)}.hsell{background:rgba(255,61,87,.15);color:var(--r)}
+.hamount{font-family:var(--mono);font-size:12px;font-weight:600}
+
+#modal-wrap{position:absolute;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:flex-end;z-index:99}
+#modal{background:var(--s2);width:100%;border-radius:22px 22px 0 0;padding:18px;border-top:1px solid #3a3a4a;max-height:90%;overflow-y:auto}
+#modal-img{width:100%;height:170px;border-radius:12px;object-fit:cover;margin-bottom:12px;background:var(--s3);display:none}
+#modal-img-ph{width:100%;height:110px;border-radius:12px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:12px}
+#mtitle{font-size:15px;font-weight:700;margin-bottom:3px}
+#mprice{font-family:var(--mono);font-size:27px;font-weight:700;margin-bottom:2px}
+.mrow{display:flex;justify-content:space-between;margin:7px 0}
+.mrow .k{font-size:11px;color:var(--muted)}.mrow .v{font-size:11px;font-weight:600}
+#qrow{display:flex;align-items:center;gap:10px;margin:13px 0}
+#qrow button{width:36px;height:36px;border-radius:50%;border:1px solid #3a3a4a;background:var(--s3);color:var(--txt);font-size:18px;cursor:pointer}
+#qval{font-family:var(--mono);font-size:20px;font-weight:700;flex:1;text-align:center}
+#mtotal{background:var(--s3);border-radius:8px;padding:10px;margin:5px 0 10px}
+#mtotal .k{font-size:10px;color:var(--muted)}.mtv{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--gold)}
+.mbtn{width:100%;padding:13px;border-radius:11px;border:none;font-size:14px;font-weight:700;cursor:pointer;margin-top:5px}
+.mbuy{background:var(--g);color:#000}.msell{background:var(--r);color:#fff}
+#mclose{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer}
+
+.notif{position:absolute;top:90px;left:50%;transform:translateX(-50%);background:#1e1e2e;border:1px solid #3a3a4a;border-radius:10px;padding:8px 16px;font-size:11px;font-weight:600;z-index:200;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none}
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:12px}
+.empty i{font-size:40px;display:block;margin-bottom:10px}
+
+@media(max-width:430px){
+  body{padding:0}
+  #phone{width:100%;min-height:100vh;border-radius:0;border:none}
+}
+</style>
+</head>
+<body>
+<div id="phone">
+  <div id="ticker"><div id="ticker-inner"></div></div>
+  <div id="hdr">
+    <div class="logo">Flip<span>Market</span> <span style="font-size:10px;color:var(--muted);font-weight:400">PRO</span></div>
+    <div id="bal-box"><div class="lbl">Solde</div><div id="bal-val">€2 500</div></div>
+  </div>
+  <nav id="nav">
+    <button class="nb act" onclick="showTab('market')" id="tnav-market"><i class="ti ti-chart-candle" aria-hidden="true"></i>Marché</button>
+    <button class="nb" onclick="showTab('portfolio')" id="tnav-portfolio"><i class="ti ti-briefcase" aria-hidden="true"></i>Portfolio</button>
+    <button class="nb" onclick="showTab('stats')" id="tnav-stats"><i class="ti ti-chart-bar" aria-hidden="true"></i>Stats</button>
+    <button class="nb" onclick="showTab('history')" id="tnav-history"><i class="ti ti-history" aria-hidden="true"></i>Historique</button>
+  </nav>
+  <div id="content">
+    <div id="tv-market"></div>
+    <div id="tv-portfolio" style="display:none"></div>
+    <div id="tv-stats" style="display:none"></div>
+    <div id="tv-history" style="display:none"></div>
+  </div>
+  <div id="modal-wrap" style="display:none">
+    <div id="modal">
+      <button id="mclose" onclick="closeModal()"><i class="ti ti-x"></i></button>
+      <div id="modal-img-ph"></div>
+      <img id="modal-img" alt="">
+      <div id="mtitle"></div>
+      <div id="mprice"></div>
+      <div class="mrow"><span class="k">Variation 24h</span><span class="v" id="mchange"></span></div>
+      <div class="mrow"><span class="k">Catégorie</span><span class="v" id="mcat"></span></div>
+      <div class="mrow"><span class="k">Tendance</span><span class="v" id="mtrend"></span></div>
+      <div class="mrow"><span class="k">En portfolio</span><span class="v" id="mstock"></span></div>
+      <div id="qrow">
+        <button onclick="chQty(-1)">-</button>
+        <div id="qval">1</div>
+        <button onclick="chQty(1)">+</button>
+      </div>
+      <div id="mtotal"><div class="k">Total estimé</div><div class="mtv" id="mtv"></div></div>
+      <button class="mbtn mbuy" id="mabtn"></button>
+      <div id="msellrow" style="margin-top:6px"></div>
+    </div>
+  </div>
+  <div class="notif" id="notif"></div>
+</div>
+
+<script>
+const CATS = ['Tous','Tech','Mode','Luxe','Gaming','Sport','Maison','Beauté','Auto','Livres'];
+
+const PRODUCTS = [
+  // Tech
+  {id:'t1',n:'iPhone 15 Pro',cat:'Tech',p:1150,v:1.4,t:'haussier',img:'iphone-15-pro'},
+  {id:'t2',n:'Samsung Galaxy S24 Ultra',cat:'Tech',p:980,v:1.5,t:'stable',img:'samsung-galaxy'},
+  {id:'t3',n:'iPad Pro M2',cat:'Tech',p:890,v:1.2,t:'stable',img:'ipad-pro'},
+  {id:'t4',n:'AirPods Pro 2',cat:'Tech',p:245,v:1.8,t:'haussier',img:'airpods-pro'},
+  {id:'t5',n:'MacBook Air M3',cat:'Tech',p:1350,v:1.0,t:'stable',img:'macbook-air'},
+  {id:'t6',n:'Sony WH-1000XM5',cat:'Tech',p:310,v:1.4,t:'baissier',img:'headphones-sony'},
+  {id:'t7',n:'Apple Watch Series 9',cat:'Tech',p:420,v:1.2,t:'haussier',img:'apple-watch'},
+  {id:'t8',n:'DJI Mini 4 Pro',cat:'Tech',p:780,v:1.3,t:'haussier',img:'drone-dji'},
+  {id:'t9',n:'RTX 4090 Gaming GPU',cat:'Tech',p:1750,v:1.8,t:'baissier',img:'graphics-card'},
+  {id:'t10',n:'GoPro Hero 12 Black',cat:'Tech',p:320,v:1.6,t:'stable',img:'gopro-camera'},
+  {id:'t11',n:'Kindle Scribe',cat:'Tech',p:340,v:1.1,t:'stable',img:'kindle-ereader'},
+  {id:'t12',n:'Raspberry Pi 5',cat:'Tech',p:85,v:2.4,t:'haussier',img:'raspberry-pi'},
+  {id:'t13',n:'Meta Quest 3',cat:'Tech',p:550,v:1.7,t:'haussier',img:'vr-headset'},
+  {id:'t14',n:'Logitech MX Master 3S',cat:'Tech',p:110,v:1.3,t:'stable',img:'computer-mouse'},
+  {id:'t15',n:'Samsung 4K OLED 65"',cat:'Tech',p:2100,v:0.9,t:'baissier',img:'oled-tv'},
+  // Mode
+  {id:'m1',n:'Air Jordan 1 Retro OG',cat:'Mode',p:320,v:3.2,t:'haussier',img:'jordan-sneakers'},
+  {id:'m2',n:'Yeezy 350 V2 Zebra',cat:'Mode',p:280,v:2.8,t:'haussier',img:'yeezy-sneakers'},
+  {id:'m3',n:'Nike Dunk Low Panda',cat:'Mode',p:160,v:2.5,t:'stable',img:'nike-dunk'},
+  {id:'m4',n:'New Balance 550 White',cat:'Mode',p:130,v:2.1,t:'haussier',img:'new-balance-shoes'},
+  {id:'m5',n:'Supreme Box Logo Hoodie',cat:'Mode',p:580,v:3.5,t:'haussier',img:'supreme-hoodie'},
+  {id:'m6',n:'Stone Island Jacket AW23',cat:'Mode',p:820,v:1.8,t:'stable',img:'stone-island-jacket'},
+  {id:'m7',n:'Off-White Belt Bag',cat:'Mode',p:460,v:2.3,t:'baissier',img:'designer-bag'},
+  {id:'m8',n:'Carhartt WIP Detroit Jacket',cat:'Mode',p:220,v:1.6,t:'stable',img:'carhartt-jacket'},
+  {id:'m9',n:'Palace Tri-Ferg Tee',cat:'Mode',p:180,v:2.9,t:'haussier',img:'streetwear-tshirt'},
+  {id:'m10',n:'Stüssy 8 Ball Fleece',cat:'Mode',p:210,v:2.2,t:'haussier',img:'stussy-hoodie'},
+  {id:'m11',n:'Bottega Veneta Wallet',cat:'Mode',p:590,v:1.4,t:'stable',img:'leather-wallet'},
+  {id:'m12',n:'CP Company Goggle Jacket',cat:'Mode',p:920,v:1.5,t:'haussier',img:'cp-company-jacket'},
+  {id:'m13',n:'Salehe Bembury Crocs',cat:'Mode',p:145,v:3.8,t:'haussier',img:'crocs-sandals'},
+  {id:'m14',n:'Adidas Samba OG',cat:'Mode',p:110,v:2.6,t:'haussier',img:'adidas-samba'},
+  // Luxe
+  {id:'l1',n:'Rolex Submariner Date',cat:'Luxe',p:12500,v:0.7,t:'haussier',img:'rolex-submariner'},
+  {id:'l2',n:'Audemars Piguet Royal Oak',cat:'Luxe',p:28000,v:0.5,t:'haussier',img:'ap-royal-oak-watch'},
+  {id:'l3',n:'Hermès Kelly 28',cat:'Luxe',p:9800,v:0.6,t:'haussier',img:'hermes-kelly-bag'},
+  {id:'l4',n:'Chanel Boy Bag',cat:'Luxe',p:7200,v:0.8,t:'haussier',img:'chanel-bag'},
+  {id:'l5',n:'Louis Vuitton Keepall 55',cat:'Luxe',p:2100,v:1.0,t:'stable',img:'louis-vuitton-bag'},
+  {id:'l6',n:'Dior Saddle Bag',cat:'Luxe',p:3400,v:0.9,t:'stable',img:'dior-saddle-bag'},
+  {id:'l7',n:'Omega Speedmaster Moon',cat:'Luxe',p:6500,v:0.7,t:'haussier',img:'omega-speedmaster'},
+  {id:'l8',n:'Cartier Love Bracelet',cat:'Luxe',p:7800,v:0.6,t:'haussier',img:'cartier-bracelet'},
+  {id:'l9',n:'Prada Re-Nylon Bag',cat:'Luxe',p:1800,v:1.1,t:'stable',img:'prada-bag'},
+  {id:'l10',n:'Breitling Navitimer 46mm',cat:'Luxe',p:5800,v:0.8,t:'stable',img:'breitling-watch'},
+  // Gaming
+  {id:'g1',n:'PS5 Slim Edition',cat:'Gaming',p:459,v:2.1,t:'stable',img:'playstation-5'},
+  {id:'g2',n:'Xbox Series X',cat:'Gaming',p:499,v:1.9,t:'stable',img:'xbox-series-x'},
+  {id:'g3',n:'Steam Deck OLED 512GB',cat:'Gaming',p:649,v:1.7,t:'haussier',img:'steam-deck'},
+  {id:'g4',n:'Nintendo Switch OLED',cat:'Gaming',p:330,v:1.9,t:'stable',img:'nintendo-switch'},
+  {id:'g5',n:'ASUS ROG Ally Z1 Extreme',cat:'Gaming',p:700,v:1.6,t:'haussier',img:'gaming-handheld'},
+  {id:'g6',n:'Pokémon TCG 151 Set',cat:'Gaming',p:65,v:4.1,t:'haussier',img:'pokemon-cards'},
+  {id:'g7',n:'MTG Black Lotus Alpha',cat:'Gaming',p:3200,v:2.8,t:'haussier',img:'magic-cards'},
+  {id:'g8',n:'Yu-Gi-Oh Blue Eyes White',cat:'Gaming',p:180,v:3.6,t:'haussier',img:'yugioh-cards'},
+  {id:'g9',n:'Funko Pop Freddy Loungefly',cat:'Gaming',p:85,v:2.9,t:'stable',img:'funko-pop'},
+  {id:'g10',n:'Lego Technic Bugatti 42151',cat:'Gaming',p:450,v:1.3,t:'stable',img:'lego-technic'},
+  {id:'g11',n:'Razer DeathAdder V3 Pro',cat:'Gaming',p:150,v:1.8,t:'stable',img:'gaming-mouse'},
+  // Sport
+  {id:'s1',n:'Nike Pegasus 41',cat:'Sport',p:135,v:1.4,t:'stable',img:'running-shoes'},
+  {id:'s2',n:'Specialized Tarmac SL8',cat:'Sport',p:12000,v:0.6,t:'haussier',img:'road-bicycle'},
+  {id:'s3',n:'Garmin Forerunner 965',cat:'Sport',p:620,v:1.1,t:'haussier',img:'garmin-watch'},
+  {id:'s4',n:'Wilson Pro Staff 97 v14',cat:'Sport',p:250,v:1.3,t:'stable',img:'tennis-racket'},
+  {id:'s5',n:'Titleist Pro V1 (douzaine)',cat:'Sport',p:55,v:1.5,t:'stable',img:'golf-balls'},
+  {id:'s6',n:'Adidas Predator Elite FG',cat:'Sport',p:280,v:1.7,t:'haussier',img:'football-boots'},
+  {id:'s7',n:'On Cloudmonster 2',cat:'Sport',p:175,v:1.6,t:'haussier',img:'on-running-shoes'},
+  {id:'s8',n:'Callaway Paradym Driver',cat:'Sport',p:550,v:1.2,t:'stable',img:'golf-driver'},
+  // Maison
+  {id:'h1',n:'Dyson V15 Detect Absolute',cat:'Maison',p:700,v:1.3,t:'stable',img:'dyson-vacuum'},
+  {id:'h2',n:'Thermomix TM7',cat:'Maison',p:1400,v:1.1,t:'stable',img:'thermomix-kitchen'},
+  {id:'h3',n:'Nespresso Vertuo Next',cat:'Maison',p:180,v:1.4,t:'stable',img:'coffee-machine'},
+  {id:'h4',n:'Weber Genesis II E-335',cat:'Maison',p:1100,v:0.9,t:'stable',img:'weber-barbecue'},
+  {id:'h5',n:'Roomba j9+ Combo',cat:'Maison',p:1100,v:1.2,t:'baissier',img:'robot-vacuum'},
+  {id:'h6',n:'KitchenAid Artisan 5KSM',cat:'Maison',p:550,v:1.1,t:'stable',img:'kitchenaid-mixer'},
+  {id:'h7',n:'Vitamix 5200 Blender',cat:'Maison',p:450,v:1.0,t:'stable',img:'vitamix-blender'},
+  {id:'h8',n:'Nanoleaf Shapes Hexagons',cat:'Maison',p:140,v:1.6,t:'haussier',img:'nanoleaf-lights'},
+  // Beauté
+  {id:'b1',n:'Dyson Airwrap Complete',cat:'Beauté',p:550,v:1.5,t:'haussier',img:'dyson-airwrap'},
+  {id:'b2',n:'La Mer Moisturizing Cream',cat:'Beauté',p:380,v:1.2,t:'stable',img:'la-mer-cream'},
+  {id:'b3',n:'Chanel No.5 EDP 100ml',cat:'Beauté',p:175,v:1.4,t:'haussier',img:'chanel-perfume'},
+  {id:'b4',n:'Tom Ford Oud Wood 50ml',cat:'Beauté',p:270,v:1.3,t:'stable',img:'tom-ford-perfume'},
+  {id:'b5',n:'Augustinus Bader Serum',cat:'Beauté',p:290,v:1.2,t:'haussier',img:'face-serum'},
+  {id:'b6',n:'Sunday Riley Good Genes',cat:'Beauté',p:105,v:1.4,t:'stable',img:'skincare-serum'},
+  {id:'b7',n:'La Prairie Caviar Cream',cat:'Beauté',p:320,v:1.1,t:'stable',img:'la-prairie-cream'},
+  // Auto
+  {id:'a1',n:'Pneus Michelin PS4S 245/40',cat:'Auto',p:280,v:1.2,t:'stable',img:'car-tyres'},
+  {id:'a2',n:'Dash Cam Nextbase 622GW',cat:'Auto',p:300,v:1.3,t:'stable',img:'dash-cam'},
+  {id:'a3',n:'Chargeur Tesla Wall 48A',cat:'Auto',p:550,v:1.1,t:'haussier',img:'tesla-charger'},
+  {id:'a4',n:'Radar Valentine One V1G2',cat:'Auto',p:480,v:1.0,t:'stable',img:'car-radar'},
+  {id:'a5',n:'GPS Garmin DriveSmart 76',cat:'Auto',p:230,v:1.2,t:'baissier',img:'car-gps'},
+  {id:'a6',n:'Coque carbone BMW M3 E46',cat:'Auto',p:1200,v:0.9,t:'haussier',img:'car-carbon'},
+  // Livres
+  {id:'bk1',n:'One Piece Box Set Vol.1-4',cat:'Livres',p:85,v:2.3,t:'haussier',img:'one-piece-manga'},
+  {id:'bk2',n:'Naruto Complete Box Set',cat:'Livres',p:220,v:2.1,t:'stable',img:'naruto-manga'},
+  {id:'bk3',n:'Harry Potter 1ère édition',cat:'Livres',p:1800,v:1.5,t:'haussier',img:'harry-potter-book'},
+  {id:'bk4',n:'Tintin Intégrale Reliée',cat:'Livres',p:350,v:1.3,t:'stable',img:'tintin-comics'},
+  {id:'bk5',n:'Astérix Intégrale Hachette',cat:'Livres',p:120,v:1.4,t:'stable',img:'asterix-comics'},
+  {id:'bk6',n:'Attack on Titan Final Box',cat:'Livres',p:95,v:2.8,t:'haussier',img:'attack-on-titan'},
+  {id:'bk7',n:'Dragon Ball Deluxe Edition',cat:'Livres',p:180,v:2.4,t:'haussier',img:'dragon-ball-manga'},
+  {id:'bk8',n:'Dune 1ère édition US 1965',cat:'Livres',p:650,v:1.6,t:'haussier',img:'dune-book'},
+];
+
+let balance = 2500, portfolio = {}, history = [], totalProfit = 0, tradeCount = 0, bestTrade = 0;
+let activeCat = 'Tous', modal = {item:null,mode:'buy',qty:1};
+let prices = {}, changes = {}, page = 0, PAGE_SIZE = 14;
+
+function init() {
+  PRODUCTS.forEach(it => {
+    prices[it.id] = it.p * (0.93 + Math.random() * 0.14);
+    changes[it.id] = (Math.random() - 0.45) * 10;
+  });
+  renderTicker();
+  renderMarket();
+  setInterval(updatePrices, 2800);
+}
+
+function updatePrices() {
+  PRODUCTS.forEach(it => {
+    const drift = it.t==='haussier'?.25:it.t==='baissier'?-.25:0;
+    const move = (Math.random()-.5+drift*.15)*it.v*.7;
+    prices[it.id] = Math.max(it.p*.35, prices[it.id]*(1+move/100));
+    changes[it.id] = changes[it.id]*.88 + move*.12;
+  });
+  renderTicker();
+  document.getElementById('bal-val').textContent = fmt(balance);
+  if(activeTab==='market') updateMarketPrices();
+  if(activeTab==='portfolio') renderPortfolio();
+}
+
+function fmt(n){return '€'+Math.round(n).toLocaleString('fr-FR')}
+function fmtd(n){return '€'+Math.abs(n).toFixed(2)}
+function pct(n){return (n>=0?'+':'')+n.toFixed(2)+'%'}
+function imgUrl(it,size){
+  const seed = it.img || it.n.replace(/\s+/g,'-').toLowerCase();
+  return size==='lg'
+    ? `https://picsum.photos/seed/${seed}/400/200`
+    : `https://picsum.photos/seed/${seed}/120/120`;
+}
+
+function filtered(){return activeCat==='Tous'?PRODUCTS:PRODUCTS.filter(i=>i.cat===activeCat)}
+
+let activeTab = 'market';
+function showTab(tab){
+  activeTab=tab;
+  ['market','portfolio','stats','history'].forEach(t=>{
+    document.getElementById('tv-'+t).style.display=t===tab?'block':'none';
+    document.getElementById('tnav-'+t).classList.toggle('act',t===tab);
+  });
+  if(tab==='market') renderMarket();
+  else if(tab==='portfolio') renderPortfolio();
+  else if(tab==='stats') renderStats();
+  else renderHistory();
+}
+
+function renderTicker(){
+  const sample = PRODUCTS.filter((_,i)=>i%4===0).slice(0,16);
+  const html = sample.map(it=>{
+    const c=changes[it.id];
+    return `<span class="ti-item">${it.n.split(' ')[0]} <span class="${c>=0?'tu':'td'}">${fmtd(prices[it.id])} ${pct(c)}</span></span>`;
+  }).join('');
+  document.getElementById('ticker-inner').innerHTML=html+html;
+}
+
+function renderMarket(){
+  const fi=filtered();
+  const slice=fi.slice(0,(page+1)*PAGE_SIZE);
+  const catsHtml=`<div class="cats">${CATS.map(c=>`<button class="cat-btn${c===activeCat?' act':''}" onclick="setCat('${c}')">${c}</button>`).join('')}</div>`;
+  const cards=slice.map(it=>{
+    const p=prices[it.id],c=changes[it.id];
+    return `<div class="icard" onclick="openModal('${it.id}','buy')">
+      <img class="iimg" src="${imgUrl(it,'sm')}" alt="${it.n}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="iimg-ph">🛍️</div>
+      <div class="iinfo"><div class="iname">${it.n}</div><div class="isub">${it.cat}</div></div>
+      <div class="iright">
+        <div class="iprice">${fmtd(p)}</div>
+        <div class="itrend ${c>=0?'up':'down'}">${pct(c)}</div>
+      </div>
+    </div>`;
+  }).join('');
+  const more = slice.length<fi.length
+    ? `<button id="load-more" onclick="loadMore()">Voir plus (${fi.length-slice.length} restants)</button>` : '';
+  document.getElementById('tv-market').innerHTML=catsHtml+`<div class="sec">${fi.length} produits disponibles</div>`+cards+more;
+}
+
+function updateMarketPrices(){
+  document.querySelectorAll('.icard').forEach(card=>{
+    const onclick=card.getAttribute('onclick')||'';
+    const m=onclick.match(/'([^']+)'/);
+    if(!m) return;
+    const id=m[1];
+    const p=prices[id],c=changes[id];
+    if(p===undefined) return;
+    const priceEl=card.querySelector('.iprice');
+    const trendEl=card.querySelector('.itrend');
+    if(priceEl) priceEl.textContent=fmtd(p);
+    if(trendEl){trendEl.textContent=pct(c);trendEl.className='itrend '+(c>=0?'up':'down')}
+  });
+}
+
+function setCat(c){activeCat=c;page=0;renderMarket()}
+function loadMore(){page++;renderMarket()}
+
+function renderPortfolio(){
+  const keys=Object.keys(portfolio).filter(k=>portfolio[k].qty>0);
+  if(!keys.length){
+    document.getElementById('tv-portfolio').innerHTML='<div class="empty"><i class="ti ti-briefcase"></i>Portfolio vide.<br>Achetez des articles sur le marché !</div>';
+    return;
+  }
+  let tv=0,tc=0;
+  const cards=keys.map(k=>{
+    const it=PRODUCTS.find(i=>i.id===k),pv=portfolio[k];
+    const cur=prices[k]*pv.qty,cost=pv.avgCost*pv.qty,pnl=cur-cost,pp=pnl/cost*100;
+    tv+=cur;tc+=cost;
+    return `<div class="port-item">
+      <div class="port-row">
+        <div style="display:flex;align-items:center;gap:8px">
+          <img src="${imgUrl(it,'sm')}" style="width:36px;height:36px;border-radius:7px;object-fit:cover" onerror="this.style.display='none'" alt="">
+          <div><div class="port-name">${it.n}</div><div class="port-qty">×${pv.qty} · moy. ${fmtd(pv.avgCost)}</div></div>
+        </div>
+        <div style="text-align:right">
+          <div class="port-pnl ${pnl>=0?'up':'down'}">${pnl>=0?'+':'−'}${fmtd(pnl)}</div>
+          <div style="font-size:9px;color:var(--muted)">${fmtd(prices[k])}/u</div>
+        </div>
+      </div>
+      <div class="pbar"><div class="pfill" style="width:${Math.min(100,Math.abs(pp)*2)}%;background:${pnl>=0?'var(--g)':'var(--r)'}"></div></div>
+      <div style="display:flex;gap:7px;margin-top:9px">
+        <button style="flex:1;padding:7px;border-radius:8px;border:none;background:var(--r);color:#fff;font-size:11px;font-weight:700;cursor:pointer" onclick="openModal('${k}','sell')">Vendre</button>
+        <button style="flex:1;padding:7px;border-radius:8px;border:none;background:var(--g);color:#000;font-size:11px;font-weight:700;cursor:pointer" onclick="openModal('${k}','buy')">Acheter +</button>
+      </div>
+    </div>`;
+  }).join('');
+  const tpnl=tv-tc;
+  document.getElementById('tv-portfolio').innerHTML=
+    `<div class="sc" style="margin-bottom:10px"><div class="lbl">P&L non réalisé</div><div class="val ${tpnl>=0?'up':'down'}">${tpnl>=0?'+':'−'}${fmtd(Math.abs(tpnl))}</div></div>
+    <div class="sec">Mes articles (${keys.length})</div>${cards}`;
+}
+
+function renderStats(){
+  const keys=Object.keys(portfolio).filter(k=>portfolio[k].qty>0);
+  const totalAssets=keys.reduce((a,k)=>a+prices[k]*portfolio[k].qty,0);
+  document.getElementById('tv-stats').innerHTML=
+    `<div class="sec">Tableau de bord</div>
+    <div id="sgrid">
+      <div class="sc"><div class="lbl">Profit réalisé</div><div class="val ${totalProfit>=0?'up':'down'}">${totalProfit>=0?'+':'−'}${fmt(Math.abs(totalProfit))}</div></div>
+      <div class="sc"><div class="lbl">Transactions</div><div class="val" style="color:var(--txt)">${tradeCount}</div></div>
+      <div class="sc"><div class="lbl">Meilleur trade</div><div class="val up">+${fmt(bestTrade)}</div></div>
+      <div class="sc"><div class="lbl">Patrimoine total</div><div class="val" style="color:var(--gold)">${fmt(balance+totalAssets)}</div></div>
+    </div>
+    <div class="sec">Catalogue</div>
+    <div class="sc"><div class="lbl">Produits disponibles</div><div class="val" style="color:var(--txt)">${PRODUCTS.length}</div></div>
+    <div class="sc" style="margin-top:8px"><div class="lbl">Catégories</div><div class="val" style="color:var(--txt)">${CATS.length-1}</div></div>`;
+}
+
+function renderHistory(){
+  if(!history.length){
+    document.getElementById('tv-history').innerHTML='<div class="empty"><i class="ti ti-history"></i>Aucune transaction.<br>Commencez à trader !</div>';
+    return;
+  }
+  document.getElementById('tv-history').innerHTML=
+    `<div class="sec">Transactions (${history.length})</div>`+
+    [...history].reverse().map(h=>`
+    <div class="hitem">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="htype h${h.type}">${h.type==='buy'?'ACHAT':'VENTE'}</span>
+        <img src="${h.img}" style="width:28px;height:28px;border-radius:6px;object-fit:cover" onerror="this.style.display='none'" alt="">
+        <div>
+          <div style="font-size:11px;font-weight:600">${h.name}</div>
+          <div style="font-size:9px;color:var(--muted)">×${h.qty} · ${fmtd(h.price)}/u · ${h.time}</div>
+        </div>
+      </div>
+      <div class="hamount ${h.type==='sell'?(h.profit>=0?'up':'down'):''}">${h.type==='sell'?(h.profit>=0?'+':'−')+fmtd(Math.abs(h.profit)):'-'+fmtd(h.total)}</div>
+    </div>`).join('');
+}
+
+function openModal(id,mode){
+  const it=PRODUCTS.find(i=>i.id===id);
+  modal={item:it,mode,qty:1};
+  const p=prices[it.id],c=changes[it.id];
+  const inPort=portfolio[id]&&portfolio[id].qty>0;
+  document.getElementById('mtitle').textContent=it.n;
+  document.getElementById('mprice').innerHTML=`<span style="color:var(--${c>=0?'g':'r'})">${fmtd(p)}</span>`;
+  document.getElementById('mchange').innerHTML=`<span class="${c>=0?'up':'down'}">${pct(c)}</span>`;
+  document.getElementById('mcat').textContent=it.cat;
+  document.getElementById('mtrend').textContent={haussier:'📈 Haussier',baissier:'📉 Baissier',stable:'➡️ Stable'}[it.t];
+  document.getElementById('mstock').textContent=inPort?`${portfolio[id].qty} en portfolio`:'Aucun';
+  const imgPh=document.getElementById('modal-img-ph'),imgEl=document.getElementById('modal-img');
+  imgPh.style.display='flex';imgEl.style.display='none';imgPh.textContent='🛍️';
+  imgEl.src=imgUrl(it,'lg');
+  imgEl.onload=()=>{imgEl.style.display='block';imgPh.style.display='none'};
+  imgEl.onerror=()=>{imgEl.style.display='none';imgPh.style.display='flex'};
+  document.getElementById('mabtn').textContent=mode==='buy'?'✅ Acheter':'💰 Vendre';
+  document.getElementById('mabtn').className='mbtn '+(mode==='buy'?'mbuy':'msell');
+  document.getElementById('mabtn').onclick=doTrade;
+  document.getElementById('msellrow').innerHTML=mode==='buy'&&inPort
+    ?`<button class="mbtn msell" onclick="openModal('${id}','sell')">Vendre mes ${it.n.split(' ')[0]}</button>`:'';
+  updateMTotal();
+  document.getElementById('modal-wrap').style.display='flex';
+}
+
+function updateMTotal(){
+  if(!modal.item) return;
+  document.getElementById('qval').textContent=modal.qty;
+  document.getElementById('mtv').textContent=fmtd(prices[modal.item.id]*modal.qty);
+}
+function chQty(d){
+  if(!modal.item) return;
+  const mx=modal.mode==='sell'?(portfolio[modal.item.id]?.qty||1):99;
+  modal.qty=Math.max(1,Math.min(modal.qty+d,mx));
+  updateMTotal();
+}
+function closeModal(){
+  document.getElementById('modal-wrap').style.display='none';
+  modal={item:null,mode:'buy',qty:1};
+}
+
+function doTrade(){
+  const it=modal.item,p=prices[it.id],qty=modal.qty,total=p*qty;
+  const now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  if(modal.mode==='buy'){
+    if(total>balance){showNotif('❌ Solde insuffisant !');return}
+    balance-=total;
+    if(!portfolio[it.id]) portfolio[it.id]={qty:0,avgCost:0};
+    const pv=portfolio[it.id];
+    pv.avgCost=(pv.avgCost*pv.qty+p*qty)/(pv.qty+qty);
+    pv.qty+=qty;
+    tradeCount++;
+    history.push({type:'buy',name:it.n,img:imgUrl(it,'sm'),qty,price:p,total,time:now});
+    showNotif(`✅ Acheté ×${qty} ${it.n.split(' ')[0]}`);
+  } else {
+    const pv=portfolio[it.id];
+    if(!pv||pv.qty<qty){showNotif('❌ Stock insuffisant !');return}
+    const profit=(p-pv.avgCost)*qty;
+    balance+=total;pv.qty-=qty;
+    totalProfit+=profit;
+    if(profit>bestTrade) bestTrade=profit;
+    tradeCount++;
+    history.push({type:'sell',name:it.n,img:imgUrl(it,'sm'),qty,price:p,total,profit,time:now});
+    showNotif(`${profit>=0?'💰':'📉'} ${profit>=0?'+':'−'}${fmtd(Math.abs(profit))}`);
+  }
+  closeModal();
+  document.getElementById('bal-val').textContent=fmt(balance);
+}
+
+function showNotif(msg){
+  const n=document.getElementById('notif');
+  n.textContent=msg;n.style.opacity='1';
+  setTimeout(()=>n.style.opacity='0',2400);
+}
+
+init();
+</script>
+</body>
+</html>
